@@ -82,19 +82,19 @@ variable "principals_pull_though_access" {
 variable "principals_push_access" {
   type        = list(string)
   default     = []
-  description = "List of AWS account IDs or IAM roles with push access to the repository"  
+  description = "List of AWS account IDs or IAM roles with push access to the repository"
 }
 
 variable "principals_full_access" {
   type        = list(string)
   default     = []
-  description = "List of AWS account IDs or IAM roles with full access to the repository"  
+  description = "List of AWS account IDs or IAM roles with full access to the repository"
 }
 
 variable "principals_lambda" {
   type        = list(string)
   default     = []
-  description = "List of AWS account IDs or IAM roles with lambda access to the repository"  
+  description = "List of AWS account IDs or IAM roles with lambda access to the repository"
 }
 
 variable "tags" {
@@ -106,25 +106,25 @@ variable "tags" {
 variable "organizations_readonly_access" {
   type        = list(string)
   default     = []
-  description = "List of AWS Organizations IDs with read-only access to the repository"  
+  description = "List of AWS Organizations IDs with read-only access to the repository"
 }
 
 variable "organizations_full_access" {
   type        = list(string)
   default     = []
-  description = "List of AWS Organizations IDs with full access to the repository"    
+  description = "List of AWS Organizations IDs with full access to the repository"
 }
 
 variable "organizations_push_access" {
   type        = list(string)
   default     = []
-  description = "List of AWS Organizations IDs with push access to the repository"      
+  description = "List of AWS Organizations IDs with push access to the repository"
 }
 
 variable "prefixes_pull_through_repositories" {
   type        = list(string)
   default     = []
-  description = "List of repository prefixes that will have pull-through access to the repository"      
+  description = "List of repository prefixes that will have pull-through access to the repository"
 }
 
 variable "replication_configurations" {
@@ -140,7 +140,7 @@ variable "replication_configurations" {
       }))
     }))
   }))
-  default = []
+  default     = []
   description = "List of replication configurations for the repository"
-  
+
 }
