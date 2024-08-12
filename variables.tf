@@ -142,5 +142,10 @@ variable "replication_configurations" {
   }))
   default     = []
   description = "List of replication configurations for the repository"
+}
 
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "A map of tags assigned to the resource"
 }

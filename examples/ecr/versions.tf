@@ -10,6 +10,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-output "string" {
-  value = format("%s🍰%s", module.cake_prefix.string, module.cake_suffix.string)
+terraform {
+  required_version = ">= 1.5.0, <= 1.5.5"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
 }

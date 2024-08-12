@@ -10,6 +10,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//output "string" {
-//  value = random_string.string.result
-//}
+output "ecr_repository_arn" {
+  description = "The ARN of the ECR repository"
+  value = aws_ecr_repository.name[*].arn
+}
+
+output "ecr_repository_registry_id" {
+  description = "The registry ID of the ECR repository"
+  value = aws_ecr_repository.name[*].registry_id
+}
+
+output "ecr_repository_url" {
+  description = "The URL of the ECR repository"
+  value = aws_ecr_repository.name[*].repository_url
+}
+
+output "ecr_tags_all" {
+  description = "A map of tags assigned to the ECR repository"
+  value = aws_ecr_repository.name[*].tags_all
+}
