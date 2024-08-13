@@ -128,23 +128,41 @@ If `make check` target is successful, developer is good to commit the code to pr
 
 | Name | Type |
 |------|------|
-| [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
-| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
-| [aws_secretsmanager_secret.db_arn](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/secretsmanager_secret) | data source |
-| [aws_secretsmanager_secret_version.secret_version](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/secretsmanager_secret_version) | data source |
+| [aws_ecr_repository.name](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_repository) | data source |
+| [aws_ecr_lifecycle_policy.name](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_lifecycle_policy) | data source |
+| [aws_ecr_repository_policy.name](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_repository_policy) | data source |
+| [aws_ecr_replication_configuration.name](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_replication_configuration) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_identifier"></a> [identifier](#input\_identifier) | The name of the RDS instance | `string` | `null` | no |
-| <a name="input_instance_use_identifier_prefix"></a> [instance\_use\_identifier\_prefix](#input\_instance\_use\_identifier\_prefix) | Determines whether to use `identifier` as is or create a unique identifier beginning with `identifier` as the specified prefix | `bool` | `false` | no |
-| <a name="input_custom_iam_instance_profile"></a> [custom\_iam\_instance\_profile](#input\_custom\_iam\_instance\_profile) | RDS custom iam instance profile | `string` | `null` | no |
+| [image_names](#input_image_names) | List of image names to be created in the repository | `list(string)` |  | yes |
+| [image_tag_mutability](#input_image_tag_mutability) | The tag mutability setting for the repository. Must be one of: MUTABLE or IMMUTABLE | `string` | `"MUTABLE"` | no |
+| [force_delete](#input_force_delete) | If true, the repository will be deleted even if it contains images | `bool` | `false` | no |
+| [encryption_configuration](#input_encryption_configuration) | The encryption configuration for the repository. If not set, the repository will not be encrypted | `object({encryption_type = string, kms_key = string})` | `null` | no |
+| [scan_images_on_push](#input_scan_images_on_push) | If true, images will be scanned for vulnerabilities after being pushed to the repository | `bool` | `true` | no |
+| [protected_tags](#input_protected_tags) | List of image tag prefixes which are protected. If a tag is created with a prefix that is in this list, it will be protected | `list(string)` | `[]` | no |
+| [time_based_rotation](#input_time_based_rotation) | The time-based image rotation configuration for the repository. If not set, the repository will not have a time-based image rotation configuration | `bool` | `false` | no |
+| [max_image_count](#input_max_image_count) | The maximum number of images to retain in the repository. If not set, the repository will retain 500 images | `number` | `500` | no |
+| [enable_lifecycle_policy](#input_enable_lifecycle_policy) | If true, the repository will have a lifecycle policy | `bool` | `true` | no |
+| [principals_readonly_access](#input_principals_readonly_access) | List of AWS account IDs or IAM roles with read-only access to the repository | `list(string)` | `[]` | no |
+| [principals_pull_though_access](#input_principals_pull_though_access) | List of AWS account IDs or IAM roles with pull-through access to the repository | `list(string)` | `[]` | no |
+| [principals_push_access](#input_principals_push_access) | List of AWS account IDs or IAM roles with push access to the repository | `list(string)` | `[]` | no |
+| [principals_full_access](#input_principals_full_access) | List of AWS account IDs or IAM roles with full access to the repository | `list(string)` | `[]` | no |
+| [principals_lambda](#input_principals_lambda) | List of AWS account IDs or IAM roles with lambda access to the repository | `list(string)` | `[]` | no |
+| [tags](#input_tags) | A map of tags to assign to the resource | `map(string)` | `{}` | no |
+| [organizations_readonly_access](#input_organizations_readonly_access) | List of AWS Organizations IDs with read-only access to the repository | `list(string)` | `[]` | no |
+| [organizations_full_access](#input_organizations_full_access) | List of AWS Organizations IDs with full access to the repository | `list(string)` | `[]` | no |
+| [organizations_push_access](#input_organizations_push_access) | List of AWS Organizations IDs with push access to the repository | `list(string)` | `[]` | no |
+| [prefixes_pull_through_repositories](#input_prefixes_pull_through_repositories) | List of repository prefixes that will have pull-through access to the repository | `list(string)` | `[]` | no |
+| [replication_configurations](#input_replication_configurations) | List of replication configurations for the repository | `list(object({destination_region = string, destination_registry_id = string, replication_rule = list(object({rule_priority = number, destination = object({region = string, registry_id = string})}))}))` | `[]` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_db_instance_address"></a> [db\_instance\_address](#output\_db\_instance\_address) | The address of the RDS instance |
-| <a name="output_db_instance_arn"></a> [db\_instance\_arn](#output\_db\_instance\_arn) | The ARN of the RDS instance |
-| <a name="output_db_instance_availability_zone"></a> [db\_instance\_availability\_zone](#output\_db\_instance\_availability\_zone) | The availability zone of the RDS instance |
+| [ecr_repository_arn](#output_ecr_repository_arn) | The ARN of the ECR repository |
+| [ecr_repository_registry_id](#output_ecr_repository_registry_id) | The registry ID of the ECR repository |
+| [ecr_repository_url](#output_ecr_repository_url) | The URL of the ECR repository |
+| [ecr_tags_all](#output_ecr_tags_all) | A map of tags assigned to the ECR repository |

@@ -12,8 +12,7 @@
 
 variable "image_names" {
   type        = list(string)
-  default     = []
-  description = "List of Docker local image names, used as repository names for AWS ECR "
+  description = "List of image names to be created in the repository"
 }
 
 variable "image_tag_mutability" {
