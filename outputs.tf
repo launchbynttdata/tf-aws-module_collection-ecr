@@ -32,10 +32,10 @@ output "repository_name" {
 
 output "repository_url" {
   description = "URL of first repository created"
-  value = module.ecr.repository_url
+  value       = module.ecr.repository_url
 }
 
 output "repository_url_map" {
   description = "Map of repository names to repository URLs"
-  value = module.ecr.repository_url_map
+  value       = module.ecr.repository_url_map
 }
