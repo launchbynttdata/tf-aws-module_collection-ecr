@@ -12,20 +12,20 @@
 
 output "ecr_repository_arn" {
   description = "The ARN of the ECR repository"
-  value = aws_ecr_repository.name[*].arn
+  value       = aws_ecr_repository.name[*].arn
 }
 
 output "ecr_repository_registry_id" {
   description = "The registry ID of the ECR repository"
-  value = aws_ecr_repository.name[*].registry_id
+  value       = aws_ecr_repository.name[*].registry_id
 }
 
 output "ecr_repository_url" {
   description = "The URL of the ECR repository"
-  value = aws_ecr_repository.name[*].repository_url
+  value       = aws_ecr_repository.name[*].repository_url
 }
 
 output "ecr_tags_all" {
   description = "A map of tags assigned to the ECR repository"
-  value = aws_ecr_repository.name[*].tags_all
+  value       = aws_ecr_repository.name[*].tags_all
 }

@@ -10,290 +10,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-resource "aws_ecr_repository" "name" {
-  for_each             = toset(var.image_names)
-  name                 = each.value
-  image_tag_mutability = var.image_tag_mutability
-  force_delete         = var.force_delete
-
-  dynamic "encryption_configuration" {
-    for_each = var.encryption_configuration == null ? [] : [var.encryption_configuration]
-    content {
-      encryption_type = encryption_configuration.value.encryption_type
-      kms_key         = encryption_configuration.value.kms_key
-    }
-  }
-
-  image_scanning_configuration {
-    scan_on_push = var.scan_images_on_push
-  }
-
-  tags = var.tags
-}
-
-resource "aws_ecr_lifecycle_policy" "name" {
-  for_each   = toset(var.enable_lifecycle_policy ? var.image_names : [])
-  repository = aws_ecr_repository.name[each.value].name
-
-  policy = jsonencode({
-    rules = concat(local.protected_tag_rules, local.untagged_image_rule, local.remove_old_image_rule)
-  })
-}
-
-data "aws_iam_policy_document" "empty" {
-}
-
-data "aws_partition" "current" {}
-
-data "aws_iam_policy_document" "resource_readonly_access" {
-  statement {
-    sid    = "ReadonlyAccess"
-    effect = "Allow"
-
-    principals {
-      type        = "AWS"
-      identifiers = var.principals_readonly_access
-    }
-
-    actions = [
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchGetImage",
-      "ecr:DescribeImageScanFindings",
-      "ecr:DescribeImages",
-      "ecr:DescribeRepositories",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:GetLifecyclePolicy",
-      "ecr:GetLifecyclePolicyPreview",
-      "ecr:GetRepositoryPolicy",
-      "ecr:ListImages",
-      "ecr:ListTagsForResource",
-    ]
-  }
-}
-
-data "aws_iam_policy_document" "resource_pull_through_cache" {
-  statement {
-    sid    = "PullThroughAccess"
-    effect = "Allow"
-
-    principals {
-      type        = "AWS"
-      identifiers = var.principals_pull_though_access
-    }
-
-    actions = [
-      "ecr:BatchImportUpstreamImage",
-      "ecr:TagResource"
-    ]
-  }
-}
-
-data "aws_iam_policy_document" "resource_push_access" {
-  statement {
-    sid    = "PushAccess"
-    effect = "Allow"
-
-    principals {
-      type        = "AWS"
-      identifiers = var.principals_push_access
-    }
-
-    actions = [
-      "ecr:CompleteLayerUpload",
-      "ecr:GetAuthorizationToken",
-      "ecr:UploadLayerPart",
-      "ecr:InitiateLayerUpload",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:PutImage",
-    ]
-  }
-}
-
-data "aws_iam_policy_document" "resource_full_access" {
-  statement {
-    sid    = "FullAccess"
-    effect = "Allow"
-
-    principals {
-      type        = "AWS"
-      identifiers = var.principals_full_access
-    }
-
-    actions = ["ecr:*"]
-  }
-}
-
-data "aws_iam_policy_document" "lambda_access" {
-  count = length(var.principals_lambda) > 0 ? 1 : 0
-
-  statement {
-    sid    = "LambdaECRImageCrossAccountRetrievalPolicy"
-    effect = "Allow"
-    actions = [
-      "ecr:BatchGetImage",
-      "ecr:GetDownloadUrlForLayer"
-    ]
-
-    principals {
-      type        = "Service"
-      identifiers = ["lambda.amazonaws.com"]
-    }
-
-    condition {
-      test     = "StringLike"
-      values   = local.principals_lambda_non_empty ? formatlist("arn:%s:lambda:*:%s:function:*", data.aws_partition.current.partition, var.principals_lambda) : []
-      variable = "aws:SourceArn"
-    }
-  }
-
-  statement {
-    sid    = "CrossAccountPermission"
-    effect = "Allow"
-    actions = [
-      "ecr:BatchGetImage",
-      "ecr:GetDownloadUrlForLayer"
-    ]
-
-    principals {
-      type        = "AWS"
-      identifiers = local.principals_lambda_non_empty ? formatlist("arn:%s:iam::%s:root", data.aws_partition.current.partition, var.principals_lambda) : []
-    }
-  }
-}
-
-data "aws_iam_policy_document" "organizations_readonly_access" {
-  count = length(var.organizations_readonly_access) > 0 ? 1 : 0
-
-  statement {
-    sid    = "OrganizationsReadonlyAccess"
-    effect = "Allow"
-
-    principals {
-      identifiers = ["*"]
-      type        = "*"
-    }
-
-    condition {
-      test     = "StringEquals"
-      values   = var.organizations_readonly_access
-      variable = "aws:PrincipalOrgID"
-    }
-
-    actions = [
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchGetImage",
-      "ecr:DescribeImageScanFindings",
-      "ecr:DescribeImages",
-      "ecr:DescribeRepositories",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:GetLifecyclePolicy",
-      "ecr:GetLifecyclePolicyPreview",
-      "ecr:GetRepositoryPolicy",
-      "ecr:ListImages",
-      "ecr:ListTagsForResource",
-    ]
-  }
-}
-
-data "aws_iam_policy_document" "organization_full_access" {
-  count = length(var.organizations_full_access) > 0 ? 1 : 0
-
-  statement {
-    sid    = "OrganizationsFullAccess"
-    effect = "Allow"
-
-    principals {
-      identifiers = ["*"]
-      type        = "*"
-    }
-
-    condition {
-      test     = "StringEquals"
-      values   = var.organizations_full_access
-      variable = "aws:PrincipalOrgID"
-    }
-
-    actions = [
-      "ecr:*",
-    ]
-  }
-}
-
-data "aws_iam_policy_document" "organization_push_access" {
-  count = length(var.organizations_push_access) > 0 ? 1 : 0
-
-  statement {
-    sid    = "OrganizationsPushAccess"
-    effect = "Allow"
-
-    principals {
-      identifiers = ["*"]
-      type        = "*"
-    }
-
-    condition {
-      test     = "StringEquals"
-      values   = var.organizations_push_access
-      variable = "aws:PrincipalOrgID"
-    }
-
-    actions = [
-      "ecr:CompleteLayerUpload",
-      "ecr:GetAuthorizationToken",
-      "ecr:UploadLayerPart",
-      "ecr:InitiateLayerUpload",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:PutImage",
-    ]
-  }
-}
-
-data "aws_iam_policy_document" "resource" {
-  for_each = toset(local.ecr_need_policy ? var.image_names : [])
-  source_policy_documents = local.principals_readonly_access_non_empty ? [
-    data.aws_iam_policy_document.resource_readonly_access.json
-  ] : [data.aws_iam_policy_document.empty.json]
-  override_policy_documents = distinct([
-    local.principals_pull_through_access_non_empty && contains(var.prefixes_pull_through_repositories, regex("^[a-z][a-z0-9\\-\\.\\_]+", each.value)) ? data.aws_iam_policy_document.resource_pull_through_cache.json : data.aws_iam_policy_document.empty.json,
-    local.principals_push_access_non_empty ? data.aws_iam_policy_document.resource_push_access.json : data.aws_iam_policy_document.empty.json,
-    local.principals_full_access_non_empty ? data.aws_iam_policy_document.resource_full_access.json : data.aws_iam_policy_document.empty.json,
-    local.principals_lambda_non_empty ? data.aws_iam_policy_document.lambda_access[0].json : data.aws_iam_policy_document.empty.json,
-    local.organizations_full_access_non_empty ? data.aws_iam_policy_document.organization_full_access[0].json : data.aws_iam_policy_document.empty.json,
-    local.organizations_readonly_access_non_empty ? data.aws_iam_policy_document.organizations_readonly_access[0].json : data.aws_iam_policy_document.empty.json,
-    local.organizations_push_non_empty ? data.aws_iam_policy_document.organization_push_access[0].json : data.aws_iam_policy_document.empty.json
-  ])
-}
-
-resource "aws_ecr_repository_policy" "name" {
-  for_each   = toset(local.ecr_need_policy ? var.image_names : [])
-  repository = aws_ecr_repository.name[each.value].name
-  policy     = data.aws_iam_policy_document.resource[each.value].json
-}
-
-resource "aws_ecr_replication_configuration" "replication_configuration" {
-  count = length(var.replication_configurations) > 0 ? 1 : 0
-  dynamic "replication_configuration" {
-    for_each = var.replication_configurations
-    content {
-      dynamic "rule" {
-        for_each = replication_configuration.value.rules
-        content {
-          dynamic "destination" {
-            for_each = rule.value.destinations
-            content {
-              region      = destination.value.region
-              registry_id = destination.value.registry_id
-            }
-          }
-          dynamic "repository_filter" {
-            for_each = rule.value.repository_filters
-            content {
-              filter      = repository_filter.value.filter
-              filter_type = repository_filter.value.filter_type
-            }
-          }
-        }
-      }
-    }
-  }
+module "ecr" {
+  source                             = "cloudposse/ecr/aws"
+  version                            = "~>0.41"
+  additional_tag_map                 = var.additional_tag_map
+  attributes                         = var.attributes
+  context                            = var.context
+  delimiter                          = var.delimiter
+  descriptor_formats                 = var.descriptor_formats
+  enable_lifecycle_policy            = var.enable_lifecycle_policy
+  enabled                            = var.enabled
+  encryption_configuration           = var.encryption_configuration
+  environment                        = var.environment
+  force_delete                       = var.force_delete
+  id_length_limit                    = var.id_length_limit
+  image_names                        = var.image_names
+  image_tag_mutability               = var.image_tag_mutability
+  label_key_case                     = var.label_key_case
+  label_order                        = var.label_order
+  label_value_case                   = var.label_value_case
+  labels_as_tags                     = var.labels_as_tags
+  max_image_count                    = var.max_image_count
+  name                               = var.name
+  namespace                          = var.namespace
+  organizations_full_access          = var.organizations_full_access
+  organizations_push_access          = var.organizations_push_access
+  organizations_readonly_access      = var.organizations_readonly_access
+  prefixes_pull_through_repositories = var.prefixes_pull_through_repositories
+  principals_full_access             = var.principals_full_access
+  principals_lambda                  = var.principals_lambda
+  principals_pull_though_access      = var.principals_pull_though_access
+  principals_push_access             = var.principals_push_access
+  principals_readonly_access         = var.principals_readonly_access
+  protected_tags                     = var.protected_tags
+  regex_replace_chars                = var.regex_replace_chars
+  replication_configurations         = var.replication_configurations
+  scan_images_on_push                = var.scan_images_on_push
+  stage                              = var.stage
+  tags                               = var.tags
+  tenant                             = var.tenant
+  time_based_rotation                = var.time_based_rotation
+  use_fullname                       = var.use_fullname
 }
