@@ -10,22 +10,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-output "ecr_repository_arn" {
-  description = "The ARN of the ECR repository"
-  value       = aws_ecr_repository.name[*].arn
+output "registry_id" {
+  description = "Registry ID"
+  value       = module.ecr.name
 }
 
-output "ecr_repository_registry_id" {
-  description = "The registry ID of the ECR repository"
-  value       = aws_ecr_repository.name[*].registry_id
+output "repository_arn" {
+  description = "ARN of first repository created"
+  value       = module.ecr.repository_arn
 }
 
-output "ecr_repository_url" {
-  description = "The URL of the ECR repository"
-  value       = aws_ecr_repository.name[*].repository_url
+output "repository_arn_map" {
+  description = "Map of repository names to repository ARNs"
+  value       = module.ecr.repository_arn_map
 }
 
-output "ecr_tags_all" {
-  description = "A map of tags assigned to the ECR repository"
-  value       = aws_ecr_repository.name[*].tags_all
+output "repository_name" {
+  description = "Name of first repository created"
+  value       = module.ecr.repository_name
+}
+
+output "repository_url" {
+  description = "URL of first repository created"
+  value = module.ecr.repository_url
+}
+
+output "repository_url_map" {
+  description = "Map of repository names to repository URLs"
+  value = module.ecr.repository_url_map
 }
