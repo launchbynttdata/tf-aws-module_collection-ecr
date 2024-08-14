@@ -12,7 +12,7 @@
 
 output "registry_id" {
   description = "Registry ID"
-  value       = module.ecr.name
+  value       = module.ecr.registry_id
 }
 
 output "repository_arn" {
