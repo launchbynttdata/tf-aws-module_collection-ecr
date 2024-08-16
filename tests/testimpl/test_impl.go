@@ -27,8 +27,40 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 		t.Errorf("Error getting repositories %s: %v", strings.Join(repositoryNames, ", "), err)
 	}
 
+	// Test if the repository exists
 	t.Run("TestDoesRepositoriesExists", func(t *testing.T) {
 		assert.True(t, len(output.Repositories) == 1, "Repository not found")
+	})
+
+	// Check repository policy exists
+	t.Run("TestRepositoryPolicy", func(t *testing.T) {
+		_, err := ecrClient.GetRepositoryPolicy(context.TODO(), &ecr.GetRepositoryPolicyInput{
+			RepositoryName: &repositoryNames[0],
+		})
+		if err != nil {
+			t.Errorf("Error getting repository policy %s: %v", repositoryNames[0], err)
+		}
+	})
+
+	// Check repository tags exists
+	t.Run("TestRepositoryTags", func(t *testing.T) {
+		outputTags, err := ecrClient.ListTagsForResource(context.TODO(), &ecr.ListTagsForResourceInput{
+			ResourceArn: output.Repositories[0].RepositoryArn,
+		})
+		if err != nil {
+			t.Errorf("Error getting repository tags %s: %v", repositoryNames[0], err)
+		}
+		assert.True(t, len(outputTags.Tags) > 0, "Repository tags not found")
+	})
+
+	// Check repository lifecycle policy exists
+	t.Run("TestRepositoryLifecyclePolicy", func(t *testing.T) {
+		_, err := ecrClient.GetLifecyclePolicy(context.TODO(), &ecr.GetLifecyclePolicyInput{
+			RepositoryName: &repositoryNames[0],
+		})
+		if err != nil {
+			t.Errorf("Error getting repository lifecycle policy %s: %v", repositoryNames[0], err)
+		}
 	})
 }
 
