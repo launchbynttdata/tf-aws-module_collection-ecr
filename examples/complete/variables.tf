@@ -57,6 +57,11 @@ variable "encryption_configuration" {
   })
   description = "ECR encryption configuration"
   default     = null
+
+  validation {
+    condition = var.encryption_configuration == null || (can(regex("^(AES256|KMS)$", var.encryption_configuration.encryption_type)) && length(var.encryption_configuration.kms_key) > 0 && length(var.encryption_configuration.kms_key) < 2049)
+    error_message = "Encryption type must be 'AES256' or 'KMS' and KMS key must be between 1 and 2048 characters."
+  }
 }
 
 variable "enabled" {
@@ -69,21 +74,42 @@ variable "region" {
   type        = string
   default     = "us-east-1"
   description = "AWS region"
+
+  validation {
+    condition     = can(regex("^us-(east|west)-(1|2)|af-south-1|ap-(east-1|(south|northeast)-(1|2)|(northeast|southeast)-3|southeast-4)|ca-(central|west)-1|eu-(north-1|(central|west|south)-(1|2)|west-3)|il-central-1|me-(south|central)-1|sa-east-1$", var.region))
+    error_message = "Region must be a valid AWS region identifier, e.g. 'us-east-1'"
+  }
 }
+
 variable "name" {
   type        = string
   default     = null
   description = "ID element. Usually the component or solution name, e.g. 'app' or 'jenkins'. This is the only ID element not also included as a `tag`. The \"name\" tag is set to the full `id` string. There is no tag with the value of the `name` input."
+
+  validation {
+    condition     = can(regex("^(?=.{2,256}$)((?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)$", var.name))
+    error_message = "Name must be between 2 and 256 characters and consist of lowercase alphanumeric characters, hyphens, or underscores."
+  }
 }
 
 variable "namespace" {
   type        = string
   default     = null
   description = "ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique"
+
+  validation {
+    condition = can(regex("^[a-z0-9][a-z0-9-]{1,254}$", var.namespace))
+    error_message = "Namespace must be between 1 and 254 characters and consist of lowercase alphanumeric characters."
+  }
 }
 
 variable "stage" {
   type        = string
   default     = null
   description = "ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release'"
+
+  validation {
+    condition     = can(regex("^[a-z0-9][a-z0-9-]{1,254}$", var.stage))
+    error_message = "Stage must be between 1 and 254 characters and consist of lowercase alphanumeric characters."
+  }
 }
