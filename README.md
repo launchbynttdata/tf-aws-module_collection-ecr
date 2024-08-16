@@ -104,7 +104,7 @@ If `make check` target is successful, developer is good to commit the code to pr
 - runs `terratest`. This is integration test suit.
 - runs `opa` tests
 
-<!-- BEGIN_TF_DOCS -->
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
@@ -179,4 +179,4 @@ No resources.
 | <a name="output_repository_name"></a> [repository\_name](#output\_repository\_name) | Name of first repository created |
 | <a name="output_repository_url"></a> [repository\_url](#output\_repository\_url) | URL of first repository created |
 | <a name="output_repository_url_map"></a> [repository\_url\_map](#output\_repository\_url\_map) | Map of repository names to repository URLs |
-<!-- END_TF_DOCS -->
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

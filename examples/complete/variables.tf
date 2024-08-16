@@ -59,7 +59,7 @@ variable "encryption_configuration" {
   default     = null
 
   validation {
-    condition     = var.encryption_configuration == null || (can(regex("^(AES256|KMS)$", var.encryption_configuration.encryption_type)) && length(var.encryption_configuration.kms_key) > 0 && length(var.encryption_configuration.kms_key) < 2049)
+    condition     = var.encryption_configuration == null || can(regex("^(AES256|KMS)$", var.encryption_configuration.encryption_type))
     error_message = "Encryption type must be 'AES256' or 'KMS' and KMS key must be between 1 and 2048 characters."
   }
 }
@@ -76,7 +76,7 @@ variable "name" {
   description = "ID element. Usually the component or solution name, e.g. 'app' or 'jenkins'. This is the only ID element not also included as a `tag`. The \"name\" tag is set to the full `id` string. There is no tag with the value of the `name` input."
 
   validation {
-    condition     = can(regex("^(?=.{2,256}$)((?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)$", var.name))
+    condition     = var.name == null || can(regex("^[a-z][a-z0-9-/]{1,254}[a-z0-9]$", var.name))
     error_message = "Name must be between 2 and 256 characters and consist of lowercase alphanumeric characters, hyphens, or underscores."
   }
 }

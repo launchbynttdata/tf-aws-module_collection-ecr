@@ -38,7 +38,7 @@ variable "context" {
   default     = { "additional_tag_map" : {}, "attributes" : [], "delimiter" : null, "descriptor_formats" : {}, "enabled" : true, "environment" : null, "id_length_limit" : null, "label_key_case" : null, "label_order" : [], "label_value_case" : null, "labels_as_tags" : ["unset"], "name" : null, "namespace" : null, "regex_replace_chars" : null, "stage" : null, "tags" : {}, "tenant" : null }
 
   validation {
-    condition     = can(index(keys(var.context), "additional_tag_map") && can(index(keys(var.context), "attributes") && can(index(keys(var.context), "delimiter") && can(index(keys(var.context), "descriptor_formats") && can(index(keys(var.context), "enabled") && can(index(keys(var.context), "environment") && can(index(keys(var.context), "id_length_limit") && can(index(keys(var.context), "label_key_case") && can(index(keys(var.context), "label_order") && can(index(keys(var.context), "label_value_case") && can(index(keys(var.context), "labels_as_tags") && can(index(keys(var.context), "name") && can(index(keys(var.context), "namespace") && can(index(keys(var.context), "regex_replace_chars") && can(index(keys(var.context), "stage") && can(index(keys(var.context), "tags") && can(index(keys(var.context), "tenant"))))))))))))))))))
+    condition     = can(index(keys(var.context), "additional_tag_map")) && can(index(keys(var.context), "attributes")) && can(index(keys(var.context), "delimiter")) && can(index(keys(var.context), "descriptor_formats")) && can(index(keys(var.context), "enabled")) && can(index(keys(var.context), "environment")) && can(index(keys(var.context), "id_length_limit")) && can(index(keys(var.context), "label_key_case")) && can(index(keys(var.context), "label_order")) && can(index(keys(var.context), "label_value_case")) && can(index(keys(var.context), "labels_as_tags")) && can(index(keys(var.context), "name")) && can(index(keys(var.context), "namespace")) && can(index(keys(var.context), "regex_replace_chars")) && can(index(keys(var.context), "stage")) && can(index(keys(var.context), "tags")) && can(index(keys(var.context), "tenant"))
     error_message = "context object must contain all the keys of the module variables."
   }
 }
@@ -81,7 +81,7 @@ variable "encryption_configuration" {
   description = "ECR encryption configuration"
 
   validation {
-    condition     = var.encryption_configuration == null || (can(regex("^(AES256|KMS)$", var.encryption_configuration.encryption_type)) && length(var.encryption_configuration.kms_key) > 0 && length(var.encryption_configuration.kms_key) < 2049)
+    condition     = var.encryption_configuration == null || can(regex("^(AES256|KMS)$", var.encryption_configuration.encryption_type))
     error_message = "Encryption type must be 'AES256' or 'KMS' and KMS key must be between 1 and 2048 characters."
   }
 }
@@ -199,7 +199,7 @@ variable "name" {
   description = "ID element. Usually the component or solution name, e.g. 'app' or 'jenkins'. This is the only ID element not also included as a `tag`. The \"name\" tag is set to the full `id` string. There is no tag with the value of the `name` input."
 
   validation {
-    condition     = var.name == null || can(regex("^[a-z0-9-]{1,255}$", var.name))
+    condition     = var.name == null || can(regex("^[a-z][a-z0-9-/]{1,254}[a-z0-9]$", var.name))
     error_message = "Name must be lowercase letters, numbers, or hyphens, and between 1 and 255 characters long."
   }
 }
