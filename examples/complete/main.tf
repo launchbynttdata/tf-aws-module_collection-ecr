@@ -19,4 +19,7 @@ module "ecr" {
   name                     = var.name
   namespace                = var.namespace
   stage                    = var.stage
+  image_names              = []
+  image_tag_mutability     = "MUTABLE"
+  label_order              = ["name"]
 }

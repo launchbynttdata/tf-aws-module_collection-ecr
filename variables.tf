@@ -49,7 +49,7 @@ variable "delimiter" {
   description = "Delimiter to be used between ID elements. Defaults to `-` (hyphen). Set to `\"\"` to use no delimiter at all."
 
   validation {
-    condition     = can(regex("^[^a-z0-9]{0,10}$", var.delimiter))
+    condition     = var.delimiter == null || can(regex("^[^a-z0-9]{0,10}$", var.delimiter))
     error_message = "Delimiter must be between 0 and 10 characters long and not contain lowercase letters or numbers."
   }
 }
@@ -118,6 +118,7 @@ variable "image_names" {
   type        = list(string)
   description = "List of Docker local image names, used as repository names for AWS ECR"
   default     = []
+  nullable    = false
 
   validation {
     condition     = alltrue([for v in var.image_names : can(regex("^[a-z0-9-]{1,255}$", v))])

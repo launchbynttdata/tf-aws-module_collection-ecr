@@ -59,7 +59,7 @@ variable "encryption_configuration" {
   default     = null
 
   validation {
-    condition = var.encryption_configuration == null || (can(regex("^(AES256|KMS)$", var.encryption_configuration.encryption_type)) && length(var.encryption_configuration.kms_key) > 0 && length(var.encryption_configuration.kms_key) < 2049)
+    condition     = var.encryption_configuration == null || (can(regex("^(AES256|KMS)$", var.encryption_configuration.encryption_type)) && length(var.encryption_configuration.kms_key) > 0 && length(var.encryption_configuration.kms_key) < 2049)
     error_message = "Encryption type must be 'AES256' or 'KMS' and KMS key must be between 1 and 2048 characters."
   }
 }
@@ -87,7 +87,7 @@ variable "namespace" {
   description = "ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique"
 
   validation {
-    condition = can(regex("^[a-z0-9][a-z0-9-]{1,254}$", var.namespace))
+    condition     = can(regex("^[a-z0-9][a-z0-9-]{1,254}$", var.namespace))
     error_message = "Namespace must be between 1 and 254 characters and consist of lowercase alphanumeric characters."
   }
 }
