@@ -70,17 +70,6 @@ variable "enabled" {
   description = "Set to false to prevent the module from creating any resources"
 }
 
-variable "region" {
-  type        = string
-  default     = "us-east-1"
-  description = "AWS region"
-
-  validation {
-    condition     = can(regex("^us-(east|west)-(1|2)|af-south-1|ap-(east-1|(south|northeast)-(1|2)|(northeast|southeast)-3|southeast-4)|ca-(central|west)-1|eu-(north-1|(central|west|south)-(1|2)|west-3)|il-central-1|me-(south|central)-1|sa-east-1$", var.region))
-    error_message = "Region must be a valid AWS region identifier, e.g. 'us-east-1'"
-  }
-}
-
 variable "name" {
   type        = string
   default     = null
