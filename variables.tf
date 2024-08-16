@@ -109,8 +109,8 @@ variable "id_length_limit" {
   description = "Limit `id` to this many characters (minimum 6). Set to `0` for unlimited length. Set to `null` for keep the existing setting, which defaults to `0`. Does not affect `id_full`."
 
   validation {
-    condition     = var.id_length_limit == null || var.id_length_limit == 0 || var.id_length_limit >= 6
-    error_message = "id_length_limit must be at least 6 characters long, or 0 for unlimited length."
+    condition     = var.id_length_limit == null || var.id_length_limit == 0 || can(var.id_length_limit >= 6)
+    error_message = "id_length_limit must be 0 or at least 6."
   }
 }
 
