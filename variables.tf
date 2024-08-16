@@ -58,11 +58,6 @@ variable "descriptor_formats" {
   type        = any
   default     = {}
   description = "Describe additional descriptors to be output in the `descriptors` output map. Map of maps. Keys are names of descriptors. Values are maps of the form `{ format = string labels = list(string) }` (Type is `any` so the map values can later be enhanced to provide additional options.) `format` is a Terraform format string to be passed to the `format()` function. `labels` is a list of labels, in order, to pass to `format()` function. Label values will be normalized before being passed to `format()` so they will be identical to how they appear in `id`. Default is `{}` (`descriptors` output will be empty)."
-
-  validation {
-    condition     = alltrue([for k, v in var.descriptor_formats : can(regex("^[a-z0-9_]{1,255}$", k) && can(type(v), map) && can(index(keys(v), "format") && can(index(keys(v), "labels"))))])
-    error_message = "Keys of descriptor_formats must be lowercase letters, numbers, or underscores, and between 1 and 255 characters long. Values must be maps with keys `format` and `labels`."
-  }
 }
 
 variable "enable_lifecycle_policy" {
