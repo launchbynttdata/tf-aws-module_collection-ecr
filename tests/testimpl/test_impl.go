@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ecr"
+	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/launchbynttdata/lcaf-component-terratest/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -15,7 +16,8 @@ import (
 
 func TestEcrCollection(t *testing.T, ctx types.TestContext) {
 	ecrClient := GetAWSECRClient(t)
-	repositoryNames := []string{"ecr-test"}
+	tfvarsFullPath := ctx.TestConfigFolderName() + "/" + ctx.CurrentTestName() + "/" + ctx.TestConfigFileName()
+	repositoryNames := []string{terraform.GetVariableAsStringFromVarFile(t, tfvarsFullPath, "name")}
 
 	repositories, err := ecrClient.DescribeRepositories(context.TODO(), &ecr.DescribeRepositoriesInput{
 		RepositoryNames: repositoryNames,
