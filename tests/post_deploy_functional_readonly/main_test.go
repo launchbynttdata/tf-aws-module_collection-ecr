@@ -33,5 +33,5 @@ func TestCollectionEcrModule(t *testing.T) {
 		SetTestConfigFileName(infraTFVarFileNameDefault).
 		Build()
 
-	lib.RunSetupTestTeardown(t, *ctx, testimpl.TestEcrCollection)
+	lib.RunNonDestructiveTest(t, *ctx, testimpl.TestEcrCollection)
 }
