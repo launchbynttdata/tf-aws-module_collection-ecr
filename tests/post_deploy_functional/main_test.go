@@ -17,7 +17,7 @@ import (
 
 	"github.com/launchbynttdata/lcaf-component-terratest/lib"
 	"github.com/launchbynttdata/lcaf-component-terratest/types"
-	"github.com/launchbynttdata/lcaf-skeleton-terraform/tests/testimpl"
+	"github.com/launchbynttdata/tf-aws-module_collection-ecr/tests/testimpl"
 )
 
 const (
