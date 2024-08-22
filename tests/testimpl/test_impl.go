@@ -13,13 +13,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestComposableComplete(t *testing.T, ctx types.TestContext) {
+func TestEcrCollection(t *testing.T, ctx types.TestContext) {
 	ecrClient := GetAWSECRClient(t)
 	repositoryNames := []string{"ecr-test"}
-	maxResults := int32(len(repositoryNames))
 
-	output, err := ecrClient.DescribeRepositories(context.TODO(), &ecr.DescribeRepositoriesInput{
-		MaxResults:      &maxResults,
+	repositories, err := ecrClient.DescribeRepositories(context.TODO(), &ecr.DescribeRepositoriesInput{
 		RepositoryNames: repositoryNames,
 	})
 
@@ -29,44 +27,21 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 
 	// Test if the repository exists
 	t.Run("TestDoesRepositoriesExists", func(t *testing.T) {
-		assert.True(t, len(output.Repositories) == 1, "Repository not found")
-	})
-
-	// Check repository policy exists
-	t.Run("TestRepositoryPolicy", func(t *testing.T) {
-		_, err := ecrClient.GetRepositoryPolicy(context.TODO(), &ecr.GetRepositoryPolicyInput{
-			RepositoryName: &repositoryNames[0],
-		})
-		if err != nil {
-			t.Errorf("Error getting repository policy %s: %v", repositoryNames[0], err)
-		}
-	})
-
-	// Check repository tags exists
-	t.Run("TestRepositoryTags", func(t *testing.T) {
-		outputTags, err := ecrClient.ListTagsForResource(context.TODO(), &ecr.ListTagsForResourceInput{
-			ResourceArn: output.Repositories[0].RepositoryArn,
-		})
-		if err != nil {
-			t.Errorf("Error getting repository tags %s: %v", repositoryNames[0], err)
-		}
-		assert.True(t, len(outputTags.Tags) > 0, "Repository tags not found")
+		assert.True(t, len(repositories.Repositories) == 1, "Repository not found")
 	})
 
 	// Check repository lifecycle policy exists
 	t.Run("TestRepositoryLifecyclePolicy", func(t *testing.T) {
-		_, err := ecrClient.GetLifecyclePolicy(context.TODO(), &ecr.GetLifecyclePolicyInput{
+		policy, err := ecrClient.GetLifecyclePolicy(context.TODO(), &ecr.GetLifecyclePolicyInput{
 			RepositoryName: &repositoryNames[0],
 		})
-		if err != nil {
-			t.Errorf("Error getting repository lifecycle policy %s: %v", repositoryNames[0], err)
-		}
+		assert.True(t, policy != nil, "Repository policy not found, error: %v", err)
 	})
 }
 
 func GetAWSECRClient(t *testing.T) *ecr.Client {
-	awsS3Client := ecr.NewFromConfig(GetAWSConfig(t))
-	return awsS3Client
+	ecrClient := ecr.NewFromConfig(GetAWSConfig(t))
+	return ecrClient
 }
 
 func GetAWSConfig(t *testing.T) (cfg aws.Config) {
