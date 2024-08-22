@@ -1,4 +1,4 @@
-module github.com/launchbynttdata/lcaf-skeleton-terraform
+module github.com/launchbynttdata/tf-aws-module_collection-ecr
 
 go 1.21
 
