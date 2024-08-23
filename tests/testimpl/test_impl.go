@@ -2,7 +2,6 @@ package testimpl
 
 import (
 	"context"
-	"strings"
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -16,15 +15,23 @@ import (
 
 func TestEcrCollection(t *testing.T, ctx types.TestContext) {
 	ecrClient := GetAWSECRClient(t)
-	tfvarsFullPath := ctx.TestConfigFolderName() + "/" + ctx.CurrentTestName() + "/" + ctx.TestConfigFileName()
-	repositoryNames := []string{terraform.GetVariableAsStringFromVarFile(t, tfvarsFullPath, "name")}
+
+	expectedRepositoryName := ""
+
+	t.Run("TestRepositoryExists", func(t *testing.T) {
+		tfvarsFullPath := ctx.TestConfigFolderName() + "/" + ctx.CurrentTestName() + "/" + ctx.TestConfigFileName()
+		expectedRepositoryName := terraform.GetVariableAsStringFromVarFile(t, tfvarsFullPath, "name")
+		repositoryName := terraform.Output(t, ctx.TerratestTerraformOptions(), "repository_name")
+		// Verify we're getting back the outputs we expect
+		assert.Equal(t, expectedRepositoryName, repositoryName)
+	})
 
 	repositories, err := ecrClient.DescribeRepositories(context.TODO(), &ecr.DescribeRepositoriesInput{
-		RepositoryNames: repositoryNames,
+		RepositoryNames: []string{expectedRepositoryName},
 	})
 
 	if err != nil {
-		t.Errorf("Error getting repositories %s: %v", strings.Join(repositoryNames, ", "), err)
+		t.Errorf("Error getting repository %s: %v", expectedRepositoryName, err)
 	}
 
 	// Test if the repository exists
@@ -35,7 +42,7 @@ func TestEcrCollection(t *testing.T, ctx types.TestContext) {
 	// Check repository lifecycle policy exists
 	t.Run("TestRepositoryLifecyclePolicy", func(t *testing.T) {
 		policy, err := ecrClient.GetLifecyclePolicy(context.TODO(), &ecr.GetLifecyclePolicyInput{
-			RepositoryName: &repositoryNames[0],
+			RepositoryName: &expectedRepositoryName,
 		})
 		assert.True(t, policy != nil, "Repository policy not found, error: %v", err)
 	})
