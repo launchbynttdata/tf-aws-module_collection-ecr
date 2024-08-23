@@ -20,7 +20,7 @@ func TestEcrCollection(t *testing.T, ctx types.TestContext) {
 
 	t.Run("TestRepositoryExists", func(t *testing.T) {
 		tfvarsFullPath := ctx.TestConfigFolderName() + "/" + ctx.CurrentTestName() + "/" + ctx.TestConfigFileName()
-		expectedRepositoryName := terraform.GetVariableAsStringFromVarFile(t, tfvarsFullPath, "name")
+		expectedRepositoryName = terraform.GetVariableAsStringFromVarFile(t, tfvarsFullPath, "name")
 		repositoryName := terraform.Output(t, ctx.TerratestTerraformOptions(), "repository_name")
 		// Verify we're getting back the outputs we expect
 		assert.Equal(t, expectedRepositoryName, repositoryName)

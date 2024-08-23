@@ -13,11 +13,8 @@
 package test
 
 import (
-	"math/rand"
-	"strconv"
 	"testing"
 
-	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/launchbynttdata/lcaf-component-terratest/lib"
 	"github.com/launchbynttdata/lcaf-component-terratest/types"
 	"github.com/launchbynttdata/tf-aws-module_collection-ecr/tests/testimpl"
@@ -30,22 +27,11 @@ const (
 
 func TestCollectionEcrModule(t *testing.T) {
 
-	randId := strconv.Itoa(rand.Intn(100000))
-	attributes := []string{randId}
-
 	ctx := types.CreateTestContextBuilder().
 		SetTestConfig(&testimpl.ThisTFModuleConfig{}).
 		SetTestConfigFolderName(testConfigsExamplesFolderDefault).
 		SetTestConfigFileName(infraTFVarFileNameDefault).
 		Build()
-
-	options := terraform.Options{
-		Vars: map[string]interface{}{
-			"attributes": attributes,
-		},
-	}
-
-	ctx.SetTerratestTerraformOptions(&options)
 
 	lib.RunSetupTestTeardown(t, *ctx, testimpl.TestEcrCollection)
 }
