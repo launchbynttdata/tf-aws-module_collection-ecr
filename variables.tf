@@ -35,11 +35,93 @@ variable "attributes" {
 variable "context" {
   type        = any
   description = "Single object for setting entire context at once. See description of individual variables for details. Leave string and numeric variables as `null` to use default value. Individual variable settings (non-null) override settings in context object, except for attributes, tags, and additional_tag_map, which are merged."
-  default     = { "additional_tag_map" : {}, "attributes" : [], "delimiter" : null, "descriptor_formats" : {}, "enabled" : true, "environment" : null, "id_length_limit" : null, "label_key_case" : null, "label_order" : [], "label_value_case" : null, "labels_as_tags" : ["unset"], "name" : null, "namespace" : null, "regex_replace_chars" : null, "stage" : null, "tags" : {}, "tenant" : null }
+  default = {
+    "additional_tag_map" : {},
+    "attributes" : [],
+    "delimiter" : null,
+    "descriptor_formats" : {},
+    "enabled" : true,
+    "environment" : null,
+    "id_length_limit" : null,
+    "label_key_case" : null,
+    "label_order" : [],
+    "label_value_case" : null,
+    "labels_as_tags" : ["unset"],
+    "name" : null,
+    "namespace" : null,
+    "regex_replace_chars" : null,
+    "stage" : null,
+    "tags" : {},
+    "tenant" : null
+  }
 
   validation {
-    condition     = can(index(keys(var.context), "additional_tag_map")) && can(index(keys(var.context), "attributes")) && can(index(keys(var.context), "delimiter")) && can(index(keys(var.context), "descriptor_formats")) && can(index(keys(var.context), "enabled")) && can(index(keys(var.context), "environment")) && can(index(keys(var.context), "id_length_limit")) && can(index(keys(var.context), "label_key_case")) && can(index(keys(var.context), "label_order")) && can(index(keys(var.context), "label_value_case")) && can(index(keys(var.context), "labels_as_tags")) && can(index(keys(var.context), "name")) && can(index(keys(var.context), "namespace")) && can(index(keys(var.context), "regex_replace_chars")) && can(index(keys(var.context), "stage")) && can(index(keys(var.context), "tags")) && can(index(keys(var.context), "tenant"))
-    error_message = "context object must contain all the keys of the module variables."
+    condition     = can(index(keys(var.context), "additional_tag_map"))
+    error_message = "context object must contain additional_tag_map key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "attributes"))
+    error_message = "context object must contain attributes key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "delimiter"))
+    error_message = "context object must contain delimiter key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "descriptor_formats"))
+    error_message = "context object must contain descriptor_formats key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "enabled"))
+    error_message = "context object must contain enabled key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "environment"))
+    error_message = "context object must contain environment key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "id_length_limit"))
+    error_message = "context object must contain id_length_limit key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "label_key_case"))
+    error_message = "context object must contain label_key_case key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "label_order"))
+    error_message = "context object must contain label_order key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "label_value_case"))
+    error_message = "context object must contain label_value_case key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "labels_as_tags"))
+    error_message = "context object must contain labels_as_tags key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "name"))
+    error_message = "context object must contain name key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "namespace"))
+    error_message = "context object must contain namespace key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "regex_replace_chars"))
+    error_message = "context object must contain regex_replace_chars key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "stage"))
+    error_message = "context object must contain stage key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "tags"))
+    error_message = "context object must contain tags key."
+  }
+  validation {
+    condition     = can(index(keys(var.context), "tenant"))
+    error_message = "context object must contain tenant key."
   }
 }
 
