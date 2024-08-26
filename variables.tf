@@ -132,7 +132,7 @@ variable "image_tag_mutability" {
   description = "The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`"
 
   validation {
-    condition     = can(regex("^(MUTABLE|IMMUTABLE)$", var.image_tag_mutability))
+    condition     = can(regex("^(IM)?MUTABLE$", var.image_tag_mutability))
     error_message = "image_tag_mutability must be 'MUTABLE' or 'IMMUTABLE'."
   }
 }
