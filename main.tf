@@ -12,7 +12,7 @@
 
 module "ecr" {
   source                             = "cloudposse/ecr/aws"
-  version                            = "~>0.41"
+  version                            = "~> 0.41"
   additional_tag_map                 = var.additional_tag_map
   attributes                         = var.attributes
   context                            = var.context
