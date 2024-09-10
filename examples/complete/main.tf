@@ -21,5 +21,9 @@ module "ecr" {
   stage                    = var.stage
   image_names              = []
   image_tag_mutability     = "MUTABLE"
-  label_order              = ["name"]
+
+  tags = {
+    provisioner = "Terraform"
+    purpose     = "Terratest examples"
+  }
 }

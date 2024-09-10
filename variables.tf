@@ -210,7 +210,7 @@ variable "image_names" {
 
 variable "image_tag_mutability" {
   type        = string
-  default     = "INMUTABLE"
+  default     = "IMMUTABLE"
   description = "The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`"
 
   validation {
@@ -232,8 +232,14 @@ variable "label_key_case" {
 
 variable "label_order" {
   type        = list(string)
-  default     = null
-  description = "The order in which the labels (ID elements) appear in the `id`. Defaults to [\"namespace\", \"environment\", \"stage\", \"name\", \"attributes\"]. You can omit any of the 6 labels (\"tenant\" is the 6th), but at least one must be present."
+  default     = ["name"]
+  description = <<EOT
+    The order in which the labels (ID elements) appear in the `id`.
+    Defaults to [\"namespace\", \"environment\", \"stage\", \"name\", \"attributes\"]. You can omit any of the
+    6 labels (\"tenant\" is the 6th), but at least one must be present.
+
+    This module is configured to work with the name of the repository provided as input
+  EOT
 
   validation {
     condition     = var.label_order == null || alltrue([for v in var.label_order : can(regex("^(namespace|environment|stage|name|attributes|tenant)$", v))])
