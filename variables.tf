@@ -464,7 +464,7 @@ variable "tags" {
   description = "Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`). Neither the tag keys nor the tag values will be modified by this module."
 
   validation {
-    condition     = alltrue([for k, v in keys(var.tags) : can(regex("^.{1,127}$", k) && can(regex("^.{1,255}$", v)))])
+    condition     = alltrue([for k, v in var.tags : can(regex("^.{1,127}$", k)) && can(regex("^.{1,255}$", v))])
     error_message = "Keys and values in tags must be between 1 and 127 and 1 and 255 characters long, respectively."
   }
 }
