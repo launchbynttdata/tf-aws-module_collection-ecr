@@ -203,8 +203,8 @@ variable "image_names" {
   nullable    = false
 
   validation {
-    condition     = alltrue([for v in var.image_names : can(regex("^[a-z0-9-]{1,255}$", v))])
-    error_message = "All elements of image_names must be lowercase letters, numbers, or hyphens, and between 1 and 255 characters long."
+    condition     = alltrue([for v in var.image_names : can(regex("^[a-z0-9_-]{1,255}$", v))])
+    error_message = "All elements of image_names must be lowercase letters, numbers, hyphens, or underscores, and between 1 and 255 characters long."
   }
 }
 
@@ -287,8 +287,8 @@ variable "name" {
   description = "ID element. Usually the component or solution name, e.g. 'app' or 'jenkins'. This is the only ID element not also included as a `tag`. The \"name\" tag is set to the full `id` string. There is no tag with the value of the `name` input."
 
   validation {
-    condition     = var.name == null || can(regex("^[a-z][a-z0-9-/]{1,254}[a-z0-9]$", var.name))
-    error_message = "Name must be lowercase letters, numbers, or hyphens, and between 1 and 255 characters long."
+    condition     = var.name == null || can(regex("^[a-z][a-z0-9-/_]{1,254}[a-z0-9]$", var.name))
+    error_message = "Name must be lowercase letters, numbers, hyphens, slashes, or underscores, and between 1 and 255 characters long."
   }
 }
 
