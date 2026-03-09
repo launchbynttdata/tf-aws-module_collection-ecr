@@ -16,23 +16,21 @@ import (
 func TestEcrCollection(t *testing.T, ctx types.TestContext) {
 	ecrClient := GetAWSECRClient(t)
 
-	expectedRepositoryName := ""
+	// When the example generates its own name we can simply read the value from
+	// terraform outputs instead of pulling it from the static tfvars file.
+	repositoryName := terraform.Output(t, ctx.TerratestTerraformOptions(), "repository_name")
+	if repositoryName == "" {
+		t.Fatal("expected output 'repository_name' to be set")
+	}
 
 	t.Run("TestRepositoryExists", func(t *testing.T) {
-		tfvarsFullPath := ctx.TestConfigFolderName() + "/" + ctx.CurrentTestName() + "/" + ctx.TestConfigFileName()
-		expectedRepositoryName = terraform.GetVariableAsStringFromVarFile(t, tfvarsFullPath, "name")
-		repositoryName := terraform.Output(t, ctx.TerratestTerraformOptions(), "repository_name")
-		// Verify we're getting back the outputs we expect
-		assert.Equal(t, expectedRepositoryName, repositoryName)
+		assert.NotEmpty(t, repositoryName, "repository_name should not be empty")
 	})
 
 	repositories, err := ecrClient.DescribeRepositories(context.TODO(), &ecr.DescribeRepositoriesInput{
-		RepositoryNames: []string{expectedRepositoryName},
+		RepositoryNames: []string{repositoryName},
 	})
-
-	if err != nil {
-		t.Errorf("Error getting repository %s: %v", expectedRepositoryName, err)
-	}
+	require.NoError(t, err)
 
 	// Test if the repository exists
 	t.Run("TestDoesRepositoriesExists", func(t *testing.T) {
@@ -42,7 +40,7 @@ func TestEcrCollection(t *testing.T, ctx types.TestContext) {
 	// Check repository lifecycle policy exists
 	t.Run("TestRepositoryLifecyclePolicy", func(t *testing.T) {
 		policy, err := ecrClient.GetLifecyclePolicy(context.TODO(), &ecr.GetLifecyclePolicyInput{
-			RepositoryName: &expectedRepositoryName,
+			RepositoryName: &repositoryName,
 		})
 		assert.True(t, policy != nil, "Repository policy not found, error: %v", err)
 	})

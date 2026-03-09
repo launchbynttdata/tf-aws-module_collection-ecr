@@ -52,6 +52,14 @@ make configure
 
 This adds in several files and directories that are ignored by `git`. They expose many new Make targets.
 
+> **CI note:** the standard LCAF pipeline code also tries to authenticate
+> against Azure with `az login` even when the module only uses AWS.  If
+> you see `ERROR: Please run 'az login' to setup account.` in the build log it
+> is harmless; either perform an explicit login in your workflow (service
+> principal) or set `SKIP_AZURE=true` when you invoke `make` to silence the
+> check.
+
+
 2. _THIS STEP APPLIES ONLY TO AWS DEVELOPMENT._ The first target you care about is `env`. This is the common interface for setting up environment variables. The values of the environment variables will be used to authenticate with AWS from local development workstation.
 
 `make configure` command will bring down `aws_env.sh` file on local workstation. Developer would need to modify this file, replace the environment variable values with relevant values.

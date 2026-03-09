@@ -4,7 +4,9 @@ namespace = "eg"
 
 stage = "test"
 
-name = "ecr-test"
+# leave the name blank so the example generates a random suffix to avoid
+# collisions between parallel/previous test runs
+name = ""
 
 encryption_configuration = {
   encryption_type = "AES256"
