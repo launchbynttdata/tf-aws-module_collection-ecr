@@ -10,15 +10,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-terraform {
-  required_providers {
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.0"
-    }
-  }
-}
-
 resource "random_pet" "repo" {}
 
 locals {
@@ -45,3 +36,6 @@ module "ecr" {
     purpose     = "Terratest examples"
   }
 }
+
+
+
