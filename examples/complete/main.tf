@@ -29,7 +29,7 @@ module "ecr" {
   encryption_configuration = var.encryption_configuration
   context                  = var.context
   enabled                  = var.enabled
-  name                     = local.computed_name
+  name                     = "example-ecr"
   namespace                = var.namespace
   stage                    = var.stage
   image_names              = []
