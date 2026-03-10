@@ -10,15 +10,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-resource "random_pet" "repo" {}
-
 module "ecr" {
   source = "../.."
 
   encryption_configuration = var.encryption_configuration
   context                  = var.context
   enabled                  = var.enabled
-  name                     = "${coalesce(var.name, "ecr")}-${random_pet.repo.id}"
+  name                     = var.name
   namespace                = var.namespace
   stage                    = var.stage
   image_names              = []
