@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-resource "random_pet" "repo" {}
+# resource "random_pet" "repo" {}
 
 # locals {
 #   # if the caller supplies a non-empty name use it, otherwise pick a
@@ -19,9 +19,9 @@ resource "random_pet" "repo" {}
 #   computed_name = length(trimspace(var.name)) > 0 ? var.name : "ecr-test-${random_pet.repo.id}"
 # }
 
-locals {
-  computed_name = var.name != null && trimspace(var.name) != "" ? var.name : "ecr-test-${random_pet.repo.id}"
-}
+# locals {
+#   computed_name = var.name != null && trimspace(var.name) != "" ? var.name : "ecr-test-${random_pet.repo.id}"
+# }
 
 module "ecr" {
   source = "../.."
