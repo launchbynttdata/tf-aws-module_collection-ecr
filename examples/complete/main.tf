@@ -16,7 +16,7 @@ locals {
   # if the caller supplies a non-empty name use it, otherwise pick a
   # stable-but‑unique value so repeated CI runs don’t collide with each
   # other.
-  computed_name = length(trim(var.name, " ")) > 0 ? var.name : "ecr-test-${random_pet.repo.id}"
+  computed_name = length(trimspace(var.name)) > 0 ? var.name : "ecr-test-${random_pet.repo.id}"
 }
 
 module "ecr" {
