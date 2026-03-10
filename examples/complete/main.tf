@@ -18,7 +18,7 @@ module "ecr" {
   encryption_configuration = var.encryption_configuration
   context                  = var.context
   enabled                  = var.enabled
-  name                     = "${var.name}-${random_pet.repo.id}"
+  name                     = "${coalesce(var.name, "ecr")}-${random_pet.repo.id}"
   namespace                = var.namespace
   stage                    = var.stage
   image_names              = []
