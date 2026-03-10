@@ -4,7 +4,7 @@ namespace = "eg"
 
 stage = "test"
 
-name = "ecr-test"
+name = "ecr-test-terraform"
 
 encryption_configuration = {
   encryption_type = "AES256"
