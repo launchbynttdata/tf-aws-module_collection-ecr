@@ -10,26 +10,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-# resource "random_pet" "repo" {}
-
-# locals {
-#   # if the caller supplies a non-empty name use it, otherwise pick a
-#   # stable-but‑unique value so repeated CI runs don’t collide with each
-#   # other.
-#   computed_name = length(trimspace(var.name)) > 0 ? var.name : "ecr-test-${random_pet.repo.id}"
-# }
-
-# locals {
-#   computed_name = var.name != null && trimspace(var.name) != "" ? var.name : "ecr-test-${random_pet.repo.id}"
-# }
-
 module "ecr" {
   source = "../.."
 
   encryption_configuration = var.encryption_configuration
   context                  = var.context
   enabled                  = var.enabled
-  name                     = "example-ecr"
+  name                     = var.name
   namespace                = var.namespace
   stage                    = var.stage
   image_names              = []
