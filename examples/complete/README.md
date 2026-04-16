@@ -2,13 +2,14 @@
 
 This example demonstrates how to use the module to create a ECR repository with all features enabled but the additional_tag_map and attributes variables not set.
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.0 |
 
 ## Providers
 
@@ -42,4 +43,4 @@ No resources.
 | <a name="output_registry_id"></a> [registry\_id](#output\_registry\_id) | Registry ID |
 | <a name="output_registry_url"></a> [registry\_url](#output\_registry\_url) | Repository URL |
 | <a name="output_repository_name"></a> [repository\_name](#output\_repository\_name) | Registry name |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
