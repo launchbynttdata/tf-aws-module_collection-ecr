@@ -203,8 +203,8 @@ variable "image_names" {
   nullable    = false
 
   validation {
-    condition     = alltrue([for v in var.image_names : can(regex("^[a-z0-9_-]{1,255}$", v))])
-    error_message = "All elements of image_names must be lowercase letters, numbers, hyphens, or underscores, and between 1 and 255 characters long."
+    condition     = alltrue([for v in var.image_names : can(regex("^[a-z0-9][a-z0-9_/-]{0,254}$", v))])
+    error_message = "All elements of image_names must be lowercase letters, numbers, hyphens, underscores, or forward slashes (for namespacing), and between 1 and 255 characters long."
   }
 }
 
