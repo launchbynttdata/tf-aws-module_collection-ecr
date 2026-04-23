@@ -2,6 +2,7 @@ package testimpl
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -20,10 +21,11 @@ func TestEcrCollection(t *testing.T, ctx types.TestContext) {
 
 	t.Run("TestRepositoryExists", func(t *testing.T) {
 		tfvarsFullPath := ctx.TestConfigFolderName() + "/" + ctx.CurrentTestName() + "/" + ctx.TestConfigFileName()
-		expectedRepositoryName = terraform.GetVariableAsStringFromVarFile(t, tfvarsFullPath, "name")
+		baseName := terraform.GetVariableAsStringFromVarFile(t, tfvarsFullPath, "name")
 		repositoryName := terraform.Output(t, ctx.TerratestTerraformOptions(), "repository_name")
-		// Verify we're getting back the outputs we expect
-		assert.Equal(t, expectedRepositoryName, repositoryName)
+		// The repository name includes a random suffix for uniqueness; verify the base name is preserved
+		assert.True(t, strings.HasPrefix(repositoryName, baseName), "expected repository name %q to start with base name %q", repositoryName, baseName)
+		expectedRepositoryName = repositoryName
 	})
 
 	repositories, err := ecrClient.DescribeRepositories(context.TODO(), &ecr.DescribeRepositoriesInput{

@@ -10,16 +10,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+resource "random_string" "suffix" {
+  length  = 6
+  upper   = false
+  special = false
+}
+
+locals {
+  unique_name = var.name != null ? "${var.name}-${random_string.suffix.result}" : random_string.suffix.result
+}
+
 module "ecr" {
   source = "../.."
 
   encryption_configuration = var.encryption_configuration
   context                  = var.context
   enabled                  = var.enabled
-  name                     = var.name
+  name                     = local.unique_name
   namespace                = var.namespace
   stage                    = var.stage
-  image_names              = []
+  image_names              = var.name != null ? [var.name] : ["ecr-example"]
   image_tag_mutability     = "MUTABLE"
 
   tags = {
