@@ -13,6 +13,7 @@
 package test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/launchbynttdata/lcaf-component-terratest/lib"
@@ -26,6 +27,13 @@ const (
 )
 
 func TestCollectionEcrModule(t *testing.T) {
+	// Inject the unique suffix into the process environment so that Terraform
+	// picks it up via TF_VAR_suffix. This is necessary because the test
+	// framework overwrites terraform.Options internally, making it impossible
+	// to pass Vars through the context builder for destructive tests.
+	if err := os.Setenv("TF_VAR_suffix", testimpl.UniqueSuffix); err != nil {
+		t.Fatalf("failed to set TF_VAR_suffix: %v", err)
+	}
 
 	ctx := types.CreateTestContextBuilder().
 		SetTestConfig(&testimpl.ThisTFModuleConfig{}).

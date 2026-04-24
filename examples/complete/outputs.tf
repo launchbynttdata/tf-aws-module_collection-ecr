@@ -22,5 +22,10 @@ output "registry_url" {
 
 output "repository_name" {
   value       = module.ecr.repository_name
-  description = "Registry name"
+  description = "Registry name (includes unique random suffix)"
+}
+
+output "unique_image_name" {
+  value       = local.unique_image_name
+  description = "Unique ECR image/repository name (base name with random suffix)"
 }

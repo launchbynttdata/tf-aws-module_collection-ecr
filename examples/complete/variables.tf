@@ -102,3 +102,14 @@ variable "stage" {
     error_message = "Stage must be between 1 and 254 characters and consist of lowercase alphanumeric characters."
   }
 }
+
+variable "suffix" {
+  type        = string
+  default     = ""
+  description = "Random suffix appended to the image name to ensure a unique ECR repository name per deployment. Must be lowercase alphanumeric, max 12 characters. Typically injected by the test framework via TF_VAR_suffix."
+
+  validation {
+    condition     = var.suffix == "" || can(regex("^[a-z0-9]{1,12}$", var.suffix))
+    error_message = "Suffix must be lowercase alphanumeric and at most 12 characters."
+  }
+}

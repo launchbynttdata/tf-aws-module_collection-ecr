@@ -10,16 +10,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+locals {
+  base_image_name   = var.name != null ? var.name : "ecr-example"
+  unique_image_name = var.suffix != "" ? "${local.base_image_name}-${var.suffix}" : local.base_image_name
+}
+
 module "ecr" {
   source = "../.."
 
   encryption_configuration = var.encryption_configuration
   context                  = var.context
   enabled                  = var.enabled
-  name                     = var.name
+  name                     = local.unique_image_name
   namespace                = var.namespace
   stage                    = var.stage
-  image_names              = []
+  image_names              = [local.unique_image_name]
   image_tag_mutability     = "MUTABLE"
 
   tags = {
