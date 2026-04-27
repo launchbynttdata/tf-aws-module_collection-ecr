@@ -121,7 +121,7 @@ variable "image_tag_mutability_exclusion_filter" {
   }))
   default     = []
   description = <<-EOT
-    List of exclusion filters for image tag mutability. Requires AWS provider >= 6.8.0; leave empty when running against AWS provider 5.x.
+    List of exclusion filters for image tag mutability. Requires AWS provider >= 6.8.0 (the minimum required by this module).
     AWS limits this list to a maximum of 5 filters per repository and enforces per-filter length / allowed-character constraints (see AWS ECR docs).
   EOT
   # example:

@@ -8,7 +8,7 @@ This example demonstrates how to use the module to create a ECR repository with 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.10 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0, < 7.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.8.0, < 7.0 |
 
 ## Providers
 
@@ -32,7 +32,7 @@ No resources.
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Set to false to prevent the module from creating any resources | `bool` | `null` | no |
 | <a name="input_encryption_configuration"></a> [encryption\_configuration](#input\_encryption\_configuration) | ECR encryption configuration | <pre>object({<br/>    encryption_type = string<br/>    kms_key         = any<br/>  })</pre> | `null` | no |
 | <a name="input_image_tag_mutability"></a> [image\_tag\_mutability](#input\_image\_tag\_mutability) | The tag mutability setting for the repository. Use 'MUTABLE\_WITH\_EXCLUSION' or 'IMMUTABLE\_WITH\_EXCLUSION' when setting image\_tag\_mutability\_exclusion\_filter. | `string` | `"MUTABLE_WITH_EXCLUSION"` | no |
-| <a name="input_image_tag_mutability_exclusion_filter"></a> [image\_tag\_mutability\_exclusion\_filter](#input\_image\_tag\_mutability\_exclusion\_filter) | List of exclusion filters for image tag mutability. Requires AWS provider >= 6.8.0; leave empty when running against AWS provider 5.x.<br/>AWS limits this list to a maximum of 5 filters per repository and enforces per-filter length / allowed-character constraints (see AWS ECR docs). | <pre>list(object({<br/>    filter      = string<br/>    filter_type = optional(string, "WILDCARD")<br/>  }))</pre> | `[]` | no |
+| <a name="input_image_tag_mutability_exclusion_filter"></a> [image\_tag\_mutability\_exclusion\_filter](#input\_image\_tag\_mutability\_exclusion\_filter) | List of exclusion filters for image tag mutability. Requires AWS provider >= 6.8.0 (the minimum required by this module).<br/>AWS limits this list to a maximum of 5 filters per repository and enforces per-filter length / allowed-character constraints (see AWS ECR docs). | <pre>list(object({<br/>    filter      = string<br/>    filter_type = optional(string, "WILDCARD")<br/>  }))</pre> | `[]` | no |
 | <a name="input_name"></a> [name](#input\_name) | ID element. Usually the component or solution name, e.g. 'app' or 'jenkins'. This is the only ID element not also included as a `tag`. The "name" tag is set to the full `id` string. There is no tag with the value of the `name` input. | `string` | `null` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique | `string` | `null` | no |
 | <a name="input_stage"></a> [stage](#input\_stage) | ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release' | `string` | `null` | no |

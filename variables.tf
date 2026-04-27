@@ -232,7 +232,7 @@ variable "image_tag_mutability_exclusion_filter" {
   default     = []
   description = <<-EOT
     List of exclusion filters for image tag mutability. Each filter object must contain 'filter' and 'filter_type' attributes.
-    Requires AWS provider >= 6.8.0; leave empty when running against AWS provider 5.x.
+    Requires AWS provider >= 6.8.0 (the minimum required by this module).
     AWS-imposed limits (enforced by the provider, not by this wrapper): a maximum of 5 filters per repository, and per-filter length / allowed-character constraints. Refer to the AWS ECR docs for current limits.
   EOT
 
