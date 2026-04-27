@@ -235,14 +235,6 @@ variable "image_tag_mutability_exclusion_filter" {
   validation {
     condition = alltrue([
       for filter in var.image_tag_mutability_exclusion_filter :
-      contains(["WILDCARD"], filter.filter_type)
-    ])
-    error_message = "filter_type must be `WILDCARD`"
-  }
-
-  validation {
-    condition = alltrue([
-      for filter in var.image_tag_mutability_exclusion_filter :
       length(trimspace(filter.filter)) > 0
     ])
     error_message = "filter value cannot be empty or contain only whitespace."
