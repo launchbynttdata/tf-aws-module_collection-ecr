@@ -230,8 +230,16 @@ variable "image_tag_mutability_exclusion_filter" {
     filter_type = optional(string, "WILDCARD")
   }))
   default     = []
-  description = "List of exclusion filters for image tag mutability. Each filter object must contain 'filter' and 'filter_type' attributes. Requires AWS provider >= 6.8.0"
+  description = <<-EOT
+    List of exclusion filters for image tag mutability. Each filter object must contain 'filter' and 'filter_type' attributes.
+    Requires AWS provider >= 6.8.0; leave empty when running against AWS provider 5.x.
+    AWS-imposed limits (enforced by the provider, not by this wrapper): a maximum of 5 filters per repository, and per-filter length / allowed-character constraints. Refer to the AWS ECR docs for current limits.
+  EOT
 
+  # Wrapper-side validation is intentionally limited to non-empty filter strings.
+  # filter_type values, list length (max 5), filter length, and allowed characters are
+  # enforced by the upstream cloudposse/ecr module and the AWS provider so this wrapper
+  # does not drift when AWS expands the accepted values.
   validation {
     condition = alltrue([
       for filter in var.image_tag_mutability_exclusion_filter :
