@@ -11,36 +11,37 @@
 // limitations under the License.
 
 module "ecr" {
-  source                             = "cloudposse/ecr/aws"
-  version                            = "~> 0.41"
-  additional_tag_map                 = var.additional_tag_map
-  attributes                         = var.attributes
-  context                            = var.context
-  delimiter                          = var.delimiter
-  descriptor_formats                 = var.descriptor_formats
-  enable_lifecycle_policy            = var.enable_lifecycle_policy
-  enabled                            = var.enabled
-  encryption_configuration           = var.encryption_configuration
-  environment                        = var.environment
-  force_delete                       = var.force_delete
-  id_length_limit                    = var.id_length_limit
-  image_names                        = var.image_names
-  image_tag_mutability               = var.image_tag_mutability
-  label_key_case                     = var.label_key_case
-  label_order                        = var.label_order
-  label_value_case                   = var.label_value_case
-  labels_as_tags                     = var.labels_as_tags
-  max_image_count                    = var.max_image_count
-  name                               = var.name
-  namespace                          = var.namespace
-  organizations_full_access          = var.organizations_full_access
-  organizations_push_access          = var.organizations_push_access
-  organizations_readonly_access      = var.organizations_readonly_access
-  prefixes_pull_through_repositories = var.prefixes_pull_through_repositories
-  principals_full_access             = var.principals_full_access
-  principals_lambda                  = var.principals_lambda
+  source                                = "cloudposse/ecr/aws"
+  version                               = "~> 1.0"
+  additional_tag_map                    = var.additional_tag_map
+  attributes                            = var.attributes
+  context                               = var.context
+  delimiter                             = var.delimiter
+  descriptor_formats                    = var.descriptor_formats
+  enable_lifecycle_policy               = var.enable_lifecycle_policy
+  enabled                               = var.enabled
+  encryption_configuration              = var.encryption_configuration
+  environment                           = var.environment
+  force_delete                          = var.force_delete
+  id_length_limit                       = var.id_length_limit
+  image_names                           = var.image_names
+  image_tag_mutability                  = var.image_tag_mutability
+  image_tag_mutability_exclusion_filter = var.image_tag_mutability_exclusion_filter
+  label_key_case                        = var.label_key_case
+  label_order                           = var.label_order
+  label_value_case                      = var.label_value_case
+  labels_as_tags                        = var.labels_as_tags
+  max_image_count                       = var.max_image_count
+  name                                  = var.name
+  namespace                             = var.namespace
+  organizations_full_access             = var.organizations_full_access
+  organizations_push_access             = var.organizations_push_access
+  organizations_readonly_access         = var.organizations_readonly_access
+  prefixes_pull_through_repositories    = var.prefixes_pull_through_repositories
+  principals_full_access                = var.principals_full_access
+  principals_lambda                     = var.principals_lambda
   # tflint-ignore: terraform_module_unsupported_attribute
-  # cloudposse/ecr ~> 0.41 has a typo in the argument name ("though" not "through"); this is intentional.
+  # cloudposse/ecr ~> 1.0 retains the typo in the argument name ("though" not "through"); this is intentional.
   principals_pull_though_access = var.principals_pull_through_access
   principals_push_access        = var.principals_push_access
   principals_readonly_access    = var.principals_readonly_access

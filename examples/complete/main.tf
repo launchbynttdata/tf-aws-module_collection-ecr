@@ -18,14 +18,15 @@ locals {
 module "ecr" {
   source = "../.."
 
-  encryption_configuration = var.encryption_configuration
-  context                  = var.context
-  enabled                  = var.enabled
-  name                     = local.unique_image_name
-  namespace                = var.namespace
-  stage                    = var.stage
-  image_names              = [local.unique_image_name]
-  image_tag_mutability     = "MUTABLE"
+  encryption_configuration              = var.encryption_configuration
+  context                               = var.context
+  enabled                               = var.enabled
+  name                                  = local.unique_image_name
+  namespace                             = var.namespace
+  stage                                 = var.stage
+  image_names                           = [local.unique_image_name]
+  image_tag_mutability                  = "MUTABLE"
+  image_tag_mutability_exclusion_filter = var.image_tag_mutability_exclusion_filter
 
   tags = {
     provisioner = "Terraform"

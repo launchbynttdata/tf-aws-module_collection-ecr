@@ -103,6 +103,15 @@ variable "stage" {
   }
 }
 
+variable "image_tag_mutability_exclusion_filter" {
+  type = list(object({
+    filter      = string
+    filter_type = optional(string, "WILDCARD")
+  }))
+  default     = []
+  description = "List of exclusion filters for image tag mutability. Requires AWS provider >= 6.8.0"
+}
+
 variable "suffix" {
   type        = string
   default     = ""
