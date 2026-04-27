@@ -18,7 +18,7 @@ LCAF_ENV_FILE = .lcafenv
 # Source repository for repo manifests
 REPO_MANIFESTS_URL ?= https://github.com/launchbynttdata/launch-common-automation-framework.git
 # Branch of source repository for repo manifests. Other tags not currently supported.
-REPO_BRANCH ?= refs/tags/1.0.0
+REPO_BRANCH ?= refs/tags/1.8.1
 # Path to seed manifest in repository referenced in REPO_MANIFESTS_URL
 REPO_MANIFEST ?= manifests/terraform_modules/seed/manifest.xml
 
@@ -42,7 +42,36 @@ JOB_NAME ?= job
 JOB_EMAIL ?= job@job.job
 
 COMPONENTS_DIR = components
+
+# golangci-lint: components invoke `golangci-lint run ... --timeout $(GO_LINT_TIMEOUT)`; CLI wins over .golangci.yaml run.timeout.
+# Set before -include so this overrides the 5m default in components/module/tasks/golang/Makefile. Override per run: make lint GO_LINT_TIMEOUT=15m
+GO_LINT_TIMEOUT ?= 10m
+
+# Terraform init for roots that use private registry modules (tflint/terraform need .terraform/modules).
+TERRAFORM_INIT_DIRS ?= . $(wildcard examples/*/) tests/review_plan
+
+.PHONY: terraform-init-all
+terraform-init-all:
+	@set -e; \
+	for d in $(TERRAFORM_INIT_DIRS); do \
+	  if [ -f "$$d/versions.tf" ]; then \
+	    echo "terraform init in $$d"; \
+	    (cd "$$d" && terraform init -backend=false -input=false); \
+	  fi; \
+	done
+
 -include $(COMPONENTS_DIR)/Makefile
+
+# go/lint runs before tfmodule/* in lint:: order (golang makefile before modules). Under make -j, lint::
+# fragments can run in parallel, so terraform in modules (e.g. terraform providers) can race golangci-lint
+# and print "Module not installed". Require init before go/lint and serialize the lint target.
+go/lint: terraform-init-all
+
+.NOTPARALLEL: lint
+
+# LCAF registers multiple test:: double-colon rules (e.g. go/test vs tfmodule plan/conftest/regula). Under make -j,
+# those recipes can run concurrently, race terraform in examples, and interleave logs so failures look like noise.
+.NOTPARALLEL: test check
 
 MODULE_DIR ?= ${COMPONENTS_DIR}/module
 
@@ -123,10 +152,11 @@ clean:
 	-repo list | awk '{ print $1; }' | cut -d '/' -f1 | uniq | xargs rm -rf
 	find . -type l ! -exec test -e {} \; -print | xargs rm -rf
 
-.PHONY: init-clean
-init-clean:
-	rm -rf .git
-	git init --initial-branch=main
-ifneq (,$(wildcard ./TEMPLATED_README.md))
-	mv TEMPLATED_README.md README.MD
-endif
+# Also run full-root init before components' tfmodule/init (covers repo root without main.tf).
+tfmodule/init: terraform-init-all
+
+# review_plan Terratest: without credentials, plan-based tests skip. Set REVIEW_PLAN_REQUIRE_AWS=1 so missing
+# credentials fail the run (use in CI when this job must exercise full plan assertions).
+.PHONY: test-review-plan-strict
+test-review-plan-strict:
+	REVIEW_PLAN_REQUIRE_AWS=1 go test ./tests/review_plan/... -count=1

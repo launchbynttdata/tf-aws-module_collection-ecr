@@ -39,16 +39,18 @@ module "ecr" {
   prefixes_pull_through_repositories = var.prefixes_pull_through_repositories
   principals_full_access             = var.principals_full_access
   principals_lambda                  = var.principals_lambda
-  principals_pull_though_access      = var.principals_pull_though_access
-  principals_push_access             = var.principals_push_access
-  principals_readonly_access         = var.principals_readonly_access
-  protected_tags                     = var.protected_tags
-  regex_replace_chars                = var.regex_replace_chars
-  replication_configurations         = var.replication_configurations
-  scan_images_on_push                = var.scan_images_on_push
-  stage                              = var.stage
-  tags                               = var.tags
-  tenant                             = var.tenant
-  time_based_rotation                = var.time_based_rotation
-  use_fullname                       = var.use_fullname
+  # tflint-ignore: terraform_module_unsupported_attribute
+  # cloudposse/ecr ~> 0.41 has a typo in the argument name ("though" not "through"); this is intentional.
+  principals_pull_though_access = var.principals_pull_through_access
+  principals_push_access        = var.principals_push_access
+  principals_readonly_access    = var.principals_readonly_access
+  protected_tags                = var.protected_tags
+  regex_replace_chars           = var.regex_replace_chars
+  replication_configurations    = var.replication_configurations
+  scan_images_on_push           = var.scan_images_on_push
+  stage                         = var.stage
+  tags                          = var.tags
+  tenant                        = var.tenant
+  time_based_rotation           = var.time_based_rotation
+  use_fullname                  = var.use_fullname
 }

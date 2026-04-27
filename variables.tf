@@ -203,8 +203,13 @@ variable "image_names" {
   nullable    = false
 
   validation {
-    condition     = alltrue([for v in var.image_names : can(regex("^[a-z0-9_-]{1,255}$", v))])
-    error_message = "All elements of image_names must be lowercase letters, numbers, hyphens, or underscores, and between 1 and 255 characters long."
+    condition = alltrue([
+      for v in var.image_names :
+      length(v) >= 2 &&
+      length(v) <= 256 &&
+      can(regex("^(?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*$", v))
+    ])
+    error_message = "Each image_name must be 2–256 characters, consist of lowercase letters, digits, hyphens, underscores, and periods within each path segment, and use '/' to separate segments."
   }
 }
 
@@ -369,14 +374,14 @@ variable "principals_lambda" {
   }
 }
 
-variable "principals_pull_though_access" {
+variable "principals_pull_through_access" {
   type        = list(string)
   default     = []
-  description = "Principal ARNs to provide with pull though access to the ECR"
+  description = "Principal ARNs to provide with pull through access to the ECR"
 
   validation {
-    condition     = alltrue([for v in var.principals_pull_though_access : can(regex("^arn:aws:iam::[0-9]{12}:root$", v))])
-    error_message = "All elements of principals_pull_though_access must be ARNs of the form 'arn:aws:iam::123456789012:root'."
+    condition     = alltrue([for v in var.principals_pull_through_access : can(regex("^arn:aws:iam::[0-9]{12}:root$", v))])
+    error_message = "All elements of principals_pull_through_access must be ARNs of the form 'arn:aws:iam::123456789012:root'."
   }
 }
 
