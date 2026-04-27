@@ -216,11 +216,11 @@ variable "image_names" {
 variable "image_tag_mutability" {
   type        = string
   default     = "IMMUTABLE"
-  description = "The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`"
+  description = "The tag mutability setting for the repository. Must be one of: `MUTABLE`, `IMMUTABLE`, `MUTABLE_WITH_EXCLUSION`, or `IMMUTABLE_WITH_EXCLUSION`. Use `*_WITH_EXCLUSION` variants when setting `image_tag_mutability_exclusion_filter`."
 
   validation {
-    condition     = can(regex("^(IM)?MUTABLE$", var.image_tag_mutability))
-    error_message = "image_tag_mutability must be 'MUTABLE' or 'IMMUTABLE'."
+    condition     = contains(["MUTABLE", "IMMUTABLE", "MUTABLE_WITH_EXCLUSION", "IMMUTABLE_WITH_EXCLUSION"], var.image_tag_mutability)
+    error_message = "image_tag_mutability must be one of: 'MUTABLE', 'IMMUTABLE', 'MUTABLE_WITH_EXCLUSION', or 'IMMUTABLE_WITH_EXCLUSION'."
   }
 }
 
