@@ -43,6 +43,17 @@ func TestEcrCollection(t *testing.T, ctx types.TestContext) {
 		})
 		assert.True(t, policy != nil, "Repository policy not found, error: %v", err)
 	})
+
+	// Verify image_tag_mutability_exclusion_filter propagates through the wrapper
+	// to the underlying aws_ecr_repository resource. This catches upstream module
+	// variable renames that would silently drop the filter without a plan error.
+	t.Run("TestImageTagMutabilityExclusionFilter", func(t *testing.T) {
+		repo := repositories.Repositories[0]
+		require.NotEmpty(t, repo.ImageTagMutabilityExclusionFilters,
+			"expected image_tag_mutability_exclusion_filter to be set on repository %s", repositoryName)
+		assert.Equal(t, "latest", *repo.ImageTagMutabilityExclusionFilters[0].Filter,
+			"expected filter value 'latest' as configured in test.tfvars")
+	})
 }
 
 func GetAWSECRClient(t *testing.T) *ecr.Client {

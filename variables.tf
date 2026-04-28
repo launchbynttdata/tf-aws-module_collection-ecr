@@ -216,11 +216,36 @@ variable "image_names" {
 variable "image_tag_mutability" {
   type        = string
   default     = "IMMUTABLE"
-  description = "The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`"
+  description = "The tag mutability setting for the repository. Must be one of: `MUTABLE`, `IMMUTABLE`, `MUTABLE_WITH_EXCLUSION`, or `IMMUTABLE_WITH_EXCLUSION`. Use `*_WITH_EXCLUSION` variants when setting `image_tag_mutability_exclusion_filter`."
 
   validation {
-    condition     = can(regex("^(IM)?MUTABLE$", var.image_tag_mutability))
-    error_message = "image_tag_mutability must be 'MUTABLE' or 'IMMUTABLE'."
+    condition     = contains(["MUTABLE", "IMMUTABLE", "MUTABLE_WITH_EXCLUSION", "IMMUTABLE_WITH_EXCLUSION"], var.image_tag_mutability)
+    error_message = "image_tag_mutability must be one of: 'MUTABLE', 'IMMUTABLE', 'MUTABLE_WITH_EXCLUSION', or 'IMMUTABLE_WITH_EXCLUSION'."
+  }
+}
+
+variable "image_tag_mutability_exclusion_filter" {
+  type = list(object({
+    filter      = string
+    filter_type = optional(string, "WILDCARD")
+  }))
+  default     = []
+  description = <<-EOT
+    List of exclusion filters for image tag mutability. Each filter object must contain 'filter' and 'filter_type' attributes.
+    Requires AWS provider >= 6.8.0 (the minimum required by this module).
+    AWS-imposed limits (enforced by the provider, not by this wrapper): a maximum of 5 filters per repository, and per-filter length / allowed-character constraints. Refer to the AWS ECR docs for current limits.
+  EOT
+
+  # Wrapper-side validation is intentionally limited to non-empty filter strings.
+  # filter_type values, list length (max 5), filter length, and allowed characters are
+  # enforced by the upstream cloudposse/ecr module and the AWS provider so this wrapper
+  # does not drift when AWS expands the accepted values.
+  validation {
+    condition = alltrue([
+      for filter in var.image_tag_mutability_exclusion_filter :
+      length(trimspace(filter.filter)) > 0
+    ])
+    error_message = "filter value cannot be empty or contain only whitespace."
   }
 }
 

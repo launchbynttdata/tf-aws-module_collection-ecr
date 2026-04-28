@@ -2,21 +2,23 @@
 
 ## Overview
 
-Terraform collection module for AWS Elastic Container Registry (ECR). It creates and configures one or more private ECR repositories by composing the [`cloudposse/ecr/aws`](https://registry.terraform.io/modules/cloudposse/ecr/aws/latest) primitive module (pinned to `~> 0.41`).
+Terraform collection module for AWS Elastic Container Registry (ECR). It creates and configures one or more private ECR repositories by composing the [`cloudposse/ecr/aws`](https://registry.terraform.io/modules/cloudposse/ecr/aws/latest) primitive module (pinned to `~> 1.0`).
 
 **What this module manages:**
 
 - **Repositories** — one private ECR repository per entry in `image_names`; the `name` / `namespace` / `stage` context controls the resulting repository name when `use_fullname = true`
 - **Lifecycle policies** — enabled by default (`enable_lifecycle_policy = true`); `max_image_count` (default 500) controls how many image versions are retained, and `time_based_rotation` switches the count type to `sinceImagePushed`
 - **Image scanning** — `scan_images_on_push = true` by default
-- **Tag immutability** — defaults to `IMMUTABLE`; set `image_tag_mutability = "MUTABLE"` when tags must be overwritten
+- **Tag immutability** — defaults to `IMMUTABLE`; set `image_tag_mutability = "MUTABLE"` when tags must be overwritten. `image_tag_mutability_exclusion_filter` carves specific tag patterns out of the mutability setting (e.g. keep the registry `IMMUTABLE` but allow `latest` / `stable-*` to move)
 - **Encryption** — AES-256 by default; pass `encryption_configuration = { encryption_type = "KMS", kms_key = "<arn>" }` for CMK encryption
 - **Access control** — granular IAM repository policies via `principals_full_access`, `principals_push_access`, `principals_readonly_access`, `principals_lambda`, `principals_pull_through_access`, and the corresponding `organizations_*` lists for AWS Organizations-level grants
 - **Pull-through cache** — `prefixes_pull_through_repositories` exposes upstream registry namespace prefixes
 - **Cross-region / cross-account replication** — `replication_configurations` maps to the `aws_ecr_replication_configuration` resource arguments (up to 10 rules, 25 destinations each)
 - **Protected tags** — `protected_tags` lists image-tag prefixes excluded from lifecycle eviction (e.g. `["prod", "staging"]`)
 
-**Provider and Terraform versions:** AWS `>= 5.0, < 7.0`, Terraform `~> 1.10`.
+**Provider and Terraform versions:** AWS `>= 6.8.0, < 7.0`, Terraform `~> 1.10`.
+
+> **AWS-imposed limits on `image_tag_mutability_exclusion_filter`.** AWS enforces a maximum of **5 filters per repository**, plus length and allowed-character constraints on each `filter` string. This wrapper deliberately does not duplicate those checks (see the comment on the variable in `variables.tf`); they are surfaced by the AWS provider at plan/apply time. Consult the [AWS ECR docs](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-tag-mutability.html) for the current authoritative limits.
 
 **Example:** `examples/complete` — used by Terratest (`tests/post_deploy_functional`). The example injects a random suffix via `TF_VAR_suffix` to guarantee a unique repository name per test run.
 
@@ -35,7 +37,7 @@ This repository uses [pre-commit](https://pre-commit.com/) to enforce code quali
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.10 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0, < 7.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.8.0, < 7.0 |
 
 ## Providers
 
@@ -45,7 +47,7 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_ecr"></a> [ecr](#module\_ecr) | cloudposse/ecr/aws | ~> 0.41 |
+| <a name="module_ecr"></a> [ecr](#module\_ecr) | cloudposse/ecr/aws | ~> 1.0 |
 
 ## Resources
 
@@ -67,7 +69,8 @@ No resources.
 | <a name="input_force_delete"></a> [force\_delete](#input\_force\_delete) | Whether to delete the repository even if it contains images | `bool` | `false` | no |
 | <a name="input_id_length_limit"></a> [id\_length\_limit](#input\_id\_length\_limit) | Limit `id` to this many characters (minimum 6). Set to `0` for unlimited length. Set to `null` for keep the existing setting, which defaults to `0`. Does not affect `id_full`. | `number` | `null` | no |
 | <a name="input_image_names"></a> [image\_names](#input\_image\_names) | List of Docker local image names, used as repository names for AWS ECR | `list(string)` | `[]` | no |
-| <a name="input_image_tag_mutability"></a> [image\_tag\_mutability](#input\_image\_tag\_mutability) | The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE` | `string` | `"IMMUTABLE"` | no |
+| <a name="input_image_tag_mutability"></a> [image\_tag\_mutability](#input\_image\_tag\_mutability) | The tag mutability setting for the repository. Must be one of: `MUTABLE`, `IMMUTABLE`, `MUTABLE_WITH_EXCLUSION`, or `IMMUTABLE_WITH_EXCLUSION`. Use `*_WITH_EXCLUSION` variants when setting `image_tag_mutability_exclusion_filter`. | `string` | `"IMMUTABLE"` | no |
+| <a name="input_image_tag_mutability_exclusion_filter"></a> [image\_tag\_mutability\_exclusion\_filter](#input\_image\_tag\_mutability\_exclusion\_filter) | List of exclusion filters for image tag mutability. Each filter object must contain 'filter' and 'filter\_type' attributes.<br/>Requires AWS provider >= 6.8.0 (the minimum required by this module).<br/>AWS-imposed limits (enforced by the provider, not by this wrapper): a maximum of 5 filters per repository, and per-filter length / allowed-character constraints. Refer to the AWS ECR docs for current limits. | <pre>list(object({<br/>    filter      = string<br/>    filter_type = optional(string, "WILDCARD")<br/>  }))</pre> | `[]` | no |
 | <a name="input_label_key_case"></a> [label\_key\_case](#input\_label\_key\_case) | Controls the letter case of the `tags` keys (label names) for tags generated by this module. Does not affect keys of tags passed in via the `tags` input. Possible values: `lower`, `title`, `upper`. Default value: `title`. | `string` | `null` | no |
 | <a name="input_label_order"></a> [label\_order](#input\_label\_order) | The order in which the labels (ID elements) appear in the `id`.<br/>    Defaults to [\"namespace\", \"environment\", \"stage\", \"name\", \"attributes\"]. You can omit any of the<br/>    6 labels (\"tenant\" is the 6th), but at least one must be present.<br/><br/>    This module is configured to work with the name of the repository provided as input | `list(string)` | <pre>[<br/>  "name"<br/>]</pre> | no |
 | <a name="input_label_value_case"></a> [label\_value\_case](#input\_label\_value\_case) | Controls the letter case of ID elements (labels) as included in `id`, set as tag values, and output by this module individually. Does not affect values of tags passed in via the `tags` input. Possible values: `lower`, `title`, `upper` and `none` (no transformation). Set this to `title` and set `delimiter` to `""` to yield Pascal Case IDs. Default value: `lower`. | `string` | `null` | no |

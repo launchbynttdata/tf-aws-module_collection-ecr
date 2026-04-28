@@ -103,6 +103,34 @@ variable "stage" {
   }
 }
 
+variable "image_tag_mutability" {
+  type        = string
+  default     = "MUTABLE_WITH_EXCLUSION"
+  description = "The tag mutability setting for the repository. Use 'MUTABLE_WITH_EXCLUSION' or 'IMMUTABLE_WITH_EXCLUSION' when setting image_tag_mutability_exclusion_filter."
+
+  validation {
+    condition     = contains(["MUTABLE", "IMMUTABLE", "MUTABLE_WITH_EXCLUSION", "IMMUTABLE_WITH_EXCLUSION"], var.image_tag_mutability)
+    error_message = "image_tag_mutability must be one of: 'MUTABLE', 'IMMUTABLE', 'MUTABLE_WITH_EXCLUSION', or 'IMMUTABLE_WITH_EXCLUSION'."
+  }
+}
+
+variable "image_tag_mutability_exclusion_filter" {
+  type = list(object({
+    filter      = string
+    filter_type = optional(string, "WILDCARD")
+  }))
+  default     = []
+  description = <<-EOT
+    List of exclusion filters for image tag mutability. Requires AWS provider >= 6.8.0 (the minimum required by this module).
+    AWS limits this list to a maximum of 5 filters per repository and enforces per-filter length / allowed-character constraints (see AWS ECR docs).
+  EOT
+  # example:
+  # image_tag_mutability_exclusion_filter = [
+  #   { filter = "latest",  filter_type = "WILDCARD" },
+  #   { filter = "stable-*" }
+  # ]
+}
+
 variable "suffix" {
   type        = string
   default     = ""
